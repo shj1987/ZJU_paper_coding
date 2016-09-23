@@ -1,0 +1,50 @@
+function [ErrL,ErrH]=Thy_Node(TSB,AOA,Unode,TE)
+global SIGMA
+Sgm=SIGMA*pi/180;
+W=length(AOA);
+C11=0;
+C12=0;
+C13=0;
+C21=0;
+C22=0;
+C23=0;
+C31=0;
+C32=0;
+C33=0;
+for ni=1:W
+    SBB=TSB(ni,:);
+    C11=C11+sin(AOA(ni))^2+Sgm^2*cos(2*AOA(ni));
+    C12=C12-0.5*sin(2*AOA(ni))+Sgm^2*sin(2*AOA(ni));
+    C13=C13-0.5*SBB(1)*sin(2*AOA(ni))-SBB(2)*sin(AOA(ni))^2+Sgm^2*(SBB(1)*sin(2*AOA(ni))-SBB(2)*cos(2*AOA(ni)));
+    C21=C21-0.5*sin(2*AOA(ni))+Sgm^2*sin(2*AOA(ni));
+    C22=C22+cos(AOA(ni))^2-Sgm^2*cos(2*AOA(ni));
+    C23=C23+SBB(1)*cos(AOA(ni))^2+0.5*SBB(2)*sin(2*AOA(ni))-Sgm^2*(SBB(1)*cos(2*AOA(ni))+SBB(2)*sin(2*AOA(ni)));
+    C31=C31-0.5*SBB(1)*sin(2*AOA(ni))-SBB(2)*sin(AOA(ni))^2+Sgm^2*(SBB(1)*sin(2*AOA(ni))-SBB(2)*cos(2*AOA(ni)));
+    C32=C32+SBB(1)*cos(AOA(ni))^2+0.5*SBB(2)*sin(2*AOA(ni))-Sgm^2*(SBB(1)*cos(2*AOA(ni))+SBB(2)*sin(2*AOA(ni)));
+    C33=C33+(SBB(1)*cos(AOA(ni))+SBB(2)*sin(AOA(ni)))^2+Sgm^2*(cos(2*AOA(ni))*(SBB(2)^2-SBB(1)^2)-2*SBB(1)*SBB(2)*sin(2*AOA(ni)));
+end
+for hi=1:W
+    HP=TSB(hi,:);
+EC=[C11 C12 C13;C21 C22 C23;C31 C32 C33]/W;
+U1=Unode(1)+Unode(2)*tan(Unode(3));
+U2=Unode(2)-Unode(1)*tan(Unode(3));
+U3=tan(Unode(3));
+AHP=mean(TSB) ;                              %信标与节点之间的距离
+Ui=U2*AHP(1)-U1*AHP(2);
+U=[2*U1;2*U2;Ui];
+EPLE=-0.5*inv(EC)*U*Sgm^2;                  %求出误差
+TU=[U1 U2 U3];
+Rea_ERR=TE-TU;
+TE;
+TR=TU+EPLE' ;                               %准确值
+TX=(TR(1)-TR(3)*TR(2))/(1+TR(3)^2);
+TY=(TR(2)+TR(1)*TR(3))/(1+TR(3)^2);
+TFai=atan(TR(3)); 
+if TFai<0
+   TFai=TFai+pi;            %修正角度
+end
+ErrL=sqrt((Unode(1)-TX)^2+(Unode(2)-TY)^2);
+ErrH=abs(TFai-Unode(3))*180/pi;
+
+
+

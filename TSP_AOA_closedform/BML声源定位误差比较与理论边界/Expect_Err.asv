@@ -1,0 +1,11 @@
+function EpErr=Expect_Err(Ag,Beacon_use(:,1:2),SSource)
+global SIGMA
+Sgma=SIGMA*pi/180;
+N=length(Ag);
+A11=0;
+A12=0;
+A21=0;
+A22=0;
+for ni=1:N
+    A11=A11+sin(Ag(ni))^2+Sgma^2*cos(2*Ag(ni));
+    A12=A11+sin(Ag(ni))^2+Sgma^2*cos(2*Ag(ni));

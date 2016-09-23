@@ -1,0 +1,14 @@
+function [BMLPbias, BMLHbias] = BML2(Source,DOAM, Array, Heading)
+if SIGMA<=4
+BMLInit = [65,5,pi/15];
+else if SIGMA==5
+       BMLInit = [5,5,pi/15]; 
+    else if SIGMA==6
+            
+end
+f = @(x)Costfun(x,Source,DOAM); %´ú¼Ûº¯Êý
+options = optimset('Display' , 'off' , 'TolFun' , 1e-5);
+BMLEst = fminsearch(f, BMLInit, options);
+BMLPbias = sqrt((BMLEst(1)-Array(1))^2+(BMLEst(2)-Array(2))^2);
+H_Bias = (BMLEst(3)-Heading)*180/pi;
+BMLHbias=abs(H_Bias);
