@@ -1,0 +1,16 @@
+function [flag,S,H]=fNull(x)
+jm=1;
+S=[];
+H=[];
+for im=1:length(x)
+    if abs(x(im)-round(x(im)))>0.00
+        S(jm)=x(im);           %非整数保存
+        H(jm)=im;              %标号
+        jm=jm+1;
+    end
+end
+if isempty(S)==1
+    flag=0;
+else 
+    flag=1;
+end
