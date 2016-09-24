@@ -1,0 +1,12 @@
+function [P_Bias, H_Bias] = PLS(SBcon,DOA,Unode,NodeAgl)  %%%%%伪线性最小二乘法
+
+% DOA : 1 x n, t时刻各个阵列接收到绝对坐标系下的角度信息;
+% Array : n x 2， t时刻各个阵列的位置;
+lt=length(DOA);          
+for i=1:lt
+A(i,1) = SBcon(i)*cos(DOA(i))+;
+A(i,2) = cos(DOA(i));
+B(i,1) = -sin(DOA(i))*Array(i,1) + cos(DOA(i))*Array(i,2);
+end
+Xy = inv(A'*A)*A'*B; 
+XY=Xy';
